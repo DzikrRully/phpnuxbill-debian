@@ -31,12 +31,12 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Set appropriate permissions
-RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 755 /var/www/html
 
 # Set working directory to Apache root
 WORKDIR /var/www/html
+
+# Set persistent volume
+VOLUME /var/www/html
 
 # Download and install PHPNuxBill (replace with latest URL or use git clone)
 RUN curl -L -o phpnuxbill.zip https://github.com/hotspotbilling/phpnuxbill/archive/refs/heads/master.zip && \
@@ -44,8 +44,12 @@ RUN curl -L -o phpnuxbill.zip https://github.com/hotspotbilling/phpnuxbill/archi
     mv phpnuxbill-master/* /var/www/html/ && \
     rm -rf phpnuxbill.zip phpnuxbill-master
 
+# Set appropriate permissions
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html
+
 # Expose HTTP port
-EXPOSE 80
+EXPOSE 80 1812/UDP 1813/UDP
 
 # Start Apache in foreground
 CMD ["apachectl", "-D", "FOREGROUND"]
