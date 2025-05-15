@@ -11,15 +11,32 @@ RUN apt-get update && apt-get install -y \
     php-mysql \
     php-gd \
     php-curl \
+    php-pdo
+    pho-pdo-mysql
     libapache2-mod-php \
     unzip \
     curl \
     git \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    zlib1g-dev \
+    libzip-dev \
+    zip \
+    nano \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install pdo pdo_mysql \
+    && docker-php-ext-install zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
+
+# Set appropriate permissions
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html
 
 # Set working directory to Apache root
 WORKDIR /var/www/html
