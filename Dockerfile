@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     php-gd \
     php-curl \
     php-pdo
-    php-pdo-mysql
+    #php-pdo-mysql
     libapache2-mod-php \
     unzip \
     curl \
