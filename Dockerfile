@@ -24,7 +24,11 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     nano \
-    freeradius freeradius-mysql freeradius-utils \
+    cron \
+    freeradius \
+    freeradius-mysql \
+    freeradius-utils \
+    freeradius-rest \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -48,8 +52,8 @@ RUN curl -L -o phpnuxbill.zip https://github.com/hotspotbilling/phpnuxbill/archi
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 
-# Expose HTTP port
-EXPOSE 80 1812/UDP 1813/UDP
+# Expose HTTP, HTTPS & FreeRadius port
+EXPOSE 80 443 1812/UDP 1813/UDP
 
 # Start Apache in foreground
 CMD ["apachectl", "-D", "FOREGROUND"]
