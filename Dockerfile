@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     php-mysql \
     php-gd \
     php-curl \
+    php-zip \
     php-pdo \
     php-pdo-mysql \
     libapache2-mod-php \
