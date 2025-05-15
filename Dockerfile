@@ -25,7 +25,7 @@ RUN a2enmod rewrite
 WORKDIR /var/www/html
 
 # Download and install PHPNuxBill (replace with latest URL or use git clone)
-RUN curl -L -o phpnuxbill.zip https://github.com/phpnuxbill/phpnuxbill/archive/refs/heads/master.zip && \
+RUN curl -L -o phpnuxbill.zip https://github.com/hotspotbilling/phpnuxbill/archive/refs/heads/master.zip && \
     unzip phpnuxbill.zip && \
     mv phpnuxbill-master/* /var/www/html/ && \
     rm -rf phpnuxbill.zip phpnuxbill-master
