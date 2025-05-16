@@ -36,12 +36,6 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Create supervisor directory
-RUN mkdir -p /var/log/supervisor
-
-# Copy supervisor config
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 # PHP version fix: dynamically detect the installed version
 # (Debian does not always install PHP 8.2; it's usually 7.4 or 8.1)
 #RUN PHP_VER=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;") && \
@@ -50,9 +44,9 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY php.ini /etc/php/8.2/apache2/conf.d/custom.ini
 
 # Freeradius setup
-COPY setup-freeradius.sh /usr/local/bin/setup-freeradius.sh
-RUN chmod +x /usr/local/bin/setup-freeradius.sh && \
-    /usr/local/bin/setup-freeradius.sh
+#COPY setup-freeradius.sh /usr/local/bin/setup-freeradius.sh
+#RUN chmod +x /usr/local/bin/setup-freeradius.sh && \
+#    /usr/local/bin/setup-freeradius.sh
 
 # Set working directory to Apache root
 WORKDIR /var/www/html
@@ -69,6 +63,12 @@ COPY phpnuxbill-install.sh /usr/local/bin/phpnuxbill-install.sh
 # Set appropriate permissions
 #RUN chown -R www-data:www-data /var/www/html && \
 #    chmod -R 755 /var/www/html
+
+# Create supervisor directory
+RUN mkdir -p /var/log/supervisor
+
+# Copy supervisor config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose HTTP, HTTPS, and FreeRADIUS ports
 EXPOSE 80 443 1812/udp 1813/udp
