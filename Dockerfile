@@ -42,6 +42,13 @@ RUN mkdir -p /var/log/supervisor
 # Copy supervisor config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Add this line after other COPY commands
+COPY php.ini /etc/php/8.2/apache2/conf.d/custom.ini
+
+COPY setup-freeradius.sh /usr/local/bin/setup-freeradius.sh
+RUN chmod +x /usr/local/bin/setup-freeradius.sh && \
+    /usr/local/bin/setup-freeradius.sh
+
 # Set working directory to Apache root
 WORKDIR /var/www/html
 
@@ -60,6 +67,7 @@ EXPOSE 80 443 1812/udp 1813/udp
 
 # Declare volume for persistent data
 VOLUME ["/var/www/html"]
+VOLUME ["/var/lib/mysql"]
 
-# Start supervisor by default
-CMD ["/usr/bin/supervisord"]
+# Start all services with supervisor
+CMD ["/usr/bin/supervisord", "-n"]
