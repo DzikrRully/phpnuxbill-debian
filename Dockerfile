@@ -57,21 +57,24 @@ RUN chmod +x /usr/local/bin/setup-freeradius.sh && \
 # Set working directory to Apache root
 WORKDIR /var/www/html
 
+# Copy PHPNuxBill installation script
+COPY phpnuxbill-install.sh /usr/local/bin/phpnuxbill-install.sh
+
 # Download and install PHPNuxBill
-RUN curl -L -o phpnuxbill.zip https://github.com/DzikrRully/phpnuxbill/archive/refs/heads/master.zip && \
-    unzip phpnuxbill.zip && \
-    mv phpnuxbill-master/* /var/www/html/ && \
-    rm -rf phpnuxbill.zip phpnuxbill-master
+#RUN curl -L -o phpnuxbill.zip https://github.com/DzikrRully/phpnuxbill/archive/refs/heads/master.zip && \
+#    unzip phpnuxbill.zip && \
+#    mv phpnuxbill-master/* /var/www/html/ && \
+#    rm -rf phpnuxbill.zip phpnuxbill-master
 
 # Set appropriate permissions
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html
+#RUN chown -R www-data:www-data /var/www/html && \
+#    chmod -R 755 /var/www/html
 
 # Expose HTTP, HTTPS, and FreeRADIUS ports
 EXPOSE 80 443 1812/udp 1813/udp
 
 # Declare volumes for persistent data
-VOLUME ["/var/www/html", "/var/lib/mysql"]
+VOLUME ["/var/www/html"]
 
 # Start all services with supervisor
 CMD ["/usr/bin/supervisord", "-n"]
