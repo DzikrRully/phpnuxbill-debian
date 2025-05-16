@@ -9,8 +9,8 @@ services:
     depends_on:
       - mysql
     ports:
-      - "80:80"
-      - "443:443"
+      - "8787:80"
+      - "8743:443"
       - "1812:1812/udp"
       - "1813:1813/udp"
     environment:
