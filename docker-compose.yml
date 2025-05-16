@@ -5,8 +5,8 @@ services:
     build: .
     container_name: PHPNuxBill
     ports:
-      - "80:80"       # HTTP
-      - "443:443"     # HTTPS (Apache must be configured for it)
+      - "8787:80"       # HTTP
+      - "8743:443"     # HTTPS (Apache must be configured for it)
       - "1812:1812/udp" # FreeRADIUS Authentication
       - "1813:1813/udp" # FreeRADIUS Accounting
     volumes:
