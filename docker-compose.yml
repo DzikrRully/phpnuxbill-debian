@@ -2,39 +2,38 @@ version: '3.8'
 
 services:
   phpnuxbill:
-    build: .
-    container_name: phpnuxbill
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: phpnuxbill_server
+    depends_on:
+      - mysql
     ports:
       - "80:80"
       - "443:443"
       - "1812:1812/udp"
       - "1813:1813/udp"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Dz1kr48791
+      MYSQL_DATABASE: phpnuxbill
     volumes:
       - phpnuxbill_data:/var/www/html
-    depends_on:
-      - mysql
-    environment:
-      - MYSQL_HOST=mysql
-      - MYSQL_USER=phpnuxbill
-      - MYSQL_PASSWORD=phpnuxbillpass
-      - MYSQL_DATABASE=phpnuxbill_db
     restart: unless-stopped
 
   mysql:
     image: mysql:5.7
-    container_name: mysql
-    restart: unless-stopped
+    container_name: mysql_server
     environment:
-      MYSQL_ROOT_PASSWORD=rootpass
-      MYSQL_DATABASE=phpnuxbill_db
-      MYSQL_USER=phpnuxbill
-      MYSQL_PASSWORD=phpnuxbillpass
-    ports:
-      - "3306:3306"
+      MYSQL_ROOT_PASSWORD: Dz1kr48791
+      MYSQL_DATABASE: phpnuxbill
     volumes:
       - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
 
 volumes:
-  mysql_data:
   phpnuxbill_data:
-  
+  mysql_data:
