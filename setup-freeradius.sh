@@ -1,29 +1,28 @@
 #!/bin/bash
-
 set -e
 
-# Path variables
-MODS_AVAILABLE=/etc/freeradius/3.0/mods-available
-MODS_ENABLED=/etc/freeradius/3.0/mods-enabled
-SITES_ENABLED=/etc/freeradius/3.0/sites-enabled/default
+# Environment vars (should be passed via Docker or Compose)
+DB_HOST=${MYSQL_HOST:-mysql}
+DB_USER=${MYSQL_USER:-root}
+DB_PASS=${MYSQL_PASSWORD:-rootpassword}
+DB_NAME=${MYSQL_DATABASE:-nuxbill}
 
-# Enable SQL module
-ln -sf ${MODS_AVAILABLE}/sql ${MODS_ENABLED}/sql
+echo "Setting up FreeRADIUS to use MySQL..."
 
-# Configure SQL module for MySQL and PHPNuxBill DB
-sed -i 's/^.*driver = "rlm_sql_.*"/driver = "rlm_sql_mysql"/' ${MODS_AVAILABLE}/sql
-sed -i 's/^.*dialect = ".*"/dialect = "mysql"/' ${MODS_AVAILABLE}/sql
+MOD_SQL_DIR="/etc/freeradius/3.0/mods-available/sql"
 
-# Inject database settings
-sed -i 's/^.*server = ".*"/        server = "mysql"/' ${MODS_AVAILABLE}/sql
-sed -i 's/^.*login = ".*"/        login = "phpnuxbill"/' ${MODS_AVAILABLE}/sql
-sed -i 's/^.*password = ".*"/        password = "phpnuxbillpass"/' ${MODS_AVAILABLE}/sql
-sed -i 's/^.*radius_db = ".*"/        radius_db = "phpnuxbill_db"/' ${MODS_AVAILABLE}/sql
+if [ -f "$MOD_SQL_DIR" ]; then
+    # Enable sql module
+    ln -sf $MOD_SQL_DIR /etc/freeradius/3.0/mods-enabled/sql
 
-# Enable SQL in default site config
-for section in authorize accounting session; do
-  sed -i "/^${section}/,/^}/{s/^(\s*)#?(\s*)sql/\1sql/}" $SITES_ENABLED
-done
+    # Replace default config
+    sed -i "s|^#.*server = .*|        server = \"$DB_HOST\"|g" $MOD_SQL_DIR
+    sed -i "s|^#.*login = .*|        login = \"$DB_USER\"|g" $MOD_SQL_DIR
+    sed -i "s|^#.*password = .*|        password = \"$DB_PASS\"|g" $MOD_SQL_DIR
+    sed -i "s|^#.*radius_db = .*|        radius_db = \"$DB_NAME\"|g" $MOD_SQL_DIR
 
-# Restart FreeRADIUS (supervisor handles this if running)
-echo "FreeRADIUS SQL setup completed."
+    echo "SQL configuration updated for FreeRADIUS."
+else
+    echo "SQL config file not found: $MOD_SQL_DIR"
+    exit 1
+fi
