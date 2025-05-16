@@ -58,7 +58,7 @@ RUN chmod +x /usr/local/bin/setup-freeradius.sh && \
 WORKDIR /var/www/html
 
 # Download and install PHPNuxBill
-RUN curl -L -o phpnuxbill.zip https://github.com/hotspotbilling/phpnuxbill/archive/refs/heads/master.zip && \
+RUN curl -L -o phpnuxbill.zip https://github.com/DzikrRully/phpnuxbill/archive/refs/heads/master.zip && \
     unzip phpnuxbill.zip && \
     mv phpnuxbill-master/* /var/www/html/ && \
     rm -rf phpnuxbill.zip phpnuxbill-master
