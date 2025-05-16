@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: PHPNuxBill
-    depends_on:
-      - mysql
     ports:
       - "8787:80"
       - "8743:443"
@@ -19,21 +17,14 @@ services:
       MYSQL_PASSWORD: rootpassword
       MYSQL_DATABASE: phpnuxbill
     volumes:
-      - phpnuxbill_data:/var/www/html
-    restart: unless-stopped
-
-  mysql:
-    image: mysql:latest
-    container_name: MySQL
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: phpnuxbill
-    volumes:
-      - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+      - ./phpnuxbill-install.sh:/usr/local/bin/phpnuxbill-install.sh
+      - html-data:/var/www/html
+    command: >
+      bash -c "
+        /usr/local/bin/phpnuxbill-install.sh &&
+        /usr/bin/supervisord -n
+      "
     restart: unless-stopped
 
 volumes:
-  phpnuxbill_data:
-  mysql_data:
+  html_data:
