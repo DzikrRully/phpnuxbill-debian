@@ -42,9 +42,14 @@ RUN mkdir -p /var/log/supervisor
 # Copy supervisor config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Add this line after other COPY commands
-COPY php.ini /etc/php/8.2/apache2/conf.d/custom.ini
+# PHP version fix: dynamically detect the installed version
+# (Debian does not always install PHP 8.2; it's usually 7.4 or 8.1)
+RUN PHP_VER=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;") && \
+    mkdir -p /etc/php/${PHP_VER}/apache2/conf.d
 
+COPY php.ini /etc/php/$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")/apache2/conf.d/custom.ini
+
+# Freeradius setup
 COPY setup-freeradius.sh /usr/local/bin/setup-freeradius.sh
 RUN chmod +x /usr/local/bin/setup-freeradius.sh && \
     /usr/local/bin/setup-freeradius.sh
@@ -65,9 +70,8 @@ RUN chown -R www-data:www-data /var/www/html && \
 # Expose HTTP, HTTPS, and FreeRADIUS ports
 EXPOSE 80 443 1812/udp 1813/udp
 
-# Declare volume for persistent data
-VOLUME ["/var/www/html"]
-VOLUME ["/var/lib/mysql"]
+# Declare volumes for persistent data
+VOLUME ["/var/www/html", "/var/lib/mysql"]
 
 # Start all services with supervisor
 CMD ["/usr/bin/supervisord", "-n"]
