@@ -4,7 +4,7 @@ set -e
 # Environment vars (should be passed via Docker or Compose)
 DB_HOST=${MYSQL_HOST:-mysql}
 DB_USER=${MYSQL_USER:-root}
-DB_PASS=${MYSQL_PASSWORD:-Dz1kr48791}
+DB_PASS=${MYSQL_PASSWORD:-rootpassword}
 DB_NAME=${MYSQL_DATABASE:-phpnuxbill}
 
 echo "Setting up FreeRADIUS to use MySQL..."
