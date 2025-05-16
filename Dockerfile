@@ -4,7 +4,7 @@ FROM debian:latest
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Apache, PHP, and required PHP extensions
+# Install system dependencies and PHP modules
 RUN apt-get update && apt-get install -y \
     apache2 \
     php \
@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y \
     php-curl \
     php-zip \
     php-pdo \
-    php-pdo-mysql \
     libapache2-mod-php \
     unzip \
     curl \
@@ -30,31 +29,30 @@ RUN apt-get update && apt-get install -y \
     freeradius-mysql \
     freeradius-utils \
     freeradius-rest \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
-
 # Set working directory to Apache root
 WORKDIR /var/www/html
 
-# Set persistent volume
-VOLUME /var/www/html
-
-# Download and install PHPNuxBill (replace with latest URL or use git clone)
+# Download and install PHPNuxBill
 RUN curl -L -o phpnuxbill.zip https://github.com/hotspotbilling/phpnuxbill/archive/refs/heads/master.zip && \
     unzip phpnuxbill.zip && \
     mv phpnuxbill-master/* /var/www/html/ && \
     rm -rf phpnuxbill.zip phpnuxbill-master
 
 # Set appropriate permissions
-RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 755 /var/www/html
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
 
-# Expose HTTP, HTTPS & FreeRadius port
-EXPOSE 80 443 1812/UDP 1813/UDP
+# Expose HTTP, HTTPS, and FreeRADIUS ports
+EXPOSE 80 443 1812/udp 1813/udp
 
-# Start Apache in foreground
+# Declare volume for persistent data
+VOLUME ["/var/www/html"]
+
+# Start Apache in the foreground
 CMD ["apachectl", "-D", "FOREGROUND"]
