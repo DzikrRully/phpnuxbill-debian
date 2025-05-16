@@ -44,10 +44,10 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # PHP version fix: dynamically detect the installed version
 # (Debian does not always install PHP 8.2; it's usually 7.4 or 8.1)
-RUN PHP_VER=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;") && \
-    mkdir -p /etc/php/${PHP_VER}/apache2/conf.d
+#RUN PHP_VER=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;") && \
+#    mkdir -p /etc/php/${PHP_VER}/apache2/conf.d
 
-COPY php.ini /etc/php/$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")/apache2/conf.d/custom.ini
+COPY php.ini /etc/php/8.2/apache2/conf.d/custom.ini
 
 # Freeradius setup
 COPY setup-freeradius.sh /usr/local/bin/setup-freeradius.sh
