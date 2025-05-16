@@ -2,29 +2,13 @@ version: '3.8'
 
 services:
   phpnuxbill:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     container_name: PHPNuxBill
     ports:
-      - "8787:80"
-      - "8743:443"
-      - "1812:1812/udp"
-      - "1813:1813/udp"
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: rootpassword
-      MYSQL_DATABASE: phpnuxbill
+      - "80:80"       # HTTP
+      - "443:443"     # HTTPS (Apache must be configured for it)
+      - "1812:1812/udp" # FreeRADIUS Authentication
+      - "1813:1813/udp" # FreeRADIUS Accounting
     volumes:
-      - ./phpnuxbill-install.sh:/usr/local/bin/phpnuxbill-install.sh
-      - html-data:/var/www/html
-    command: >
-      bash -c "
-        /usr/local/bin/phpnuxbill-install.sh &&
-        /usr/bin/supervisord -n
-      "
+      - ./html:/var/www/html   # Mount host directory for web content
     restart: unless-stopped
-
-volumes:
-  html_data:
