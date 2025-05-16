@@ -29,11 +29,18 @@ RUN apt-get update && apt-get install -y \
     freeradius-mysql \
     freeradius-utils \
     freeradius-rest \
+    supervisor \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
+
+# Create supervisor directory
+RUN mkdir -p /var/log/supervisor
+
+# Copy supervisor config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set working directory to Apache root
 WORKDIR /var/www/html
@@ -54,5 +61,5 @@ EXPOSE 80 443 1812/udp 1813/udp
 # Declare volume for persistent data
 VOLUME ["/var/www/html"]
 
-# Start Apache in the foreground
-CMD ["apachectl", "-D", "FOREGROUND"]
+# Start supervisor by default
+CMD ["/usr/bin/supervisord"]
